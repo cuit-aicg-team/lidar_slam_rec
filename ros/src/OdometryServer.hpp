@@ -30,16 +30,11 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 
-#include <sensor_msgs/msg/image.hpp>  
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/header.hpp>
 #include <string>
-#include <pcl/point_cloud.h>  
-#include <pcl/point_types.h>  
-#include <pcl_conversions/pcl_conversions.h>  
-#include <fstream>  
 
 namespace kiss_icp_ros {
 
@@ -52,7 +47,7 @@ public:
 private:
     /// Register new frame
     void RegisterFrame(const sensor_msgs::msg::PointCloud2::ConstSharedPtr &msg);
-    void image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
+
     /// Stream the estimated pose to ROS
     void PublishOdometry(const Sophus::SE3d &kiss_pose, const std_msgs::msg::Header &header);
 
@@ -70,17 +65,8 @@ private:
     bool publish_odom_tf_;
     bool publish_debug_clouds_;
 
-
-    std::ostringstream oss; 
-    int  points_index=0;
-    int  img_index=0;
-    string  points_save_path="output/points/";
-    string  imgs_save_path="output/imgs/";
-    string  root_path="output/";
-
     /// Data subscribers.
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pointcloud_sub_;
-    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription_image_;
 
     /// Data publishers.
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;

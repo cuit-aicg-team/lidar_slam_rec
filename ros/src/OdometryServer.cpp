@@ -109,10 +109,7 @@ OdometryServer::OdometryServer(const rclcpp::NodeOptions &options)
     pointcloud_sub_ = create_subscription<sensor_msgs::msg::PointCloud2>(
         "pointcloud_topic", rclcpp::SensorDataQoS(),
         std::bind(&OdometryServer::RegisterFrame, this, std::placeholders::_1));
-    subscription_image_ = create_subscription<sensor_msgs::msg::Image>(  
-            "image_topic",  rclcpp::SensorDataQoS(), 
-            std::bind(&OdometryServer::image_callback, this, std::placeholders::_1));  
-  
+
     // Initialize publishers
     rclcpp::QoS qos((rclcpp::SystemDefaultsQoS().keep_last(1).durability_volatile()));
     odom_publisher_ = create_publisher<nav_msgs::msg::Odometry>("/kiss/odometry", qos);
@@ -132,76 +129,11 @@ OdometryServer::OdometryServer(const rclcpp::NodeOptions &options)
     RCLCPP_INFO(this->get_logger(), "KISS-ICP ROS 2 odometry node initialized");
 }
 
- void OdometryServer::image_callback(const sensor_msgs::msg::Image::SharedPtr msg) {  
-        cv_bridge::CvImagePtr cv_ptr;  
-        try {  
-            cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);  
-        } catch (cv_bridge::Exception& e) {  
-            RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());  
-            return;  
-        }  
-        oss.str("");  // 清空ostringstream  
-        oss.clear();  // 重置状态  
-        oss << "image_" << std::setw(4) << std::setfill('0') << img_index << ".png";  
-        string filename = oss.str();  
-        std::string path = points_save_path + filename;  
-           
-        cv::imwrite(filename, cv_ptr->image);  
-
-        RCLCPP_INFO(this->get_logger(), "Saved image to %s", filename.c_str());  
-
-          std::string points_f = root_path+"imgs.txt";  
-  
-    // 创建并打开文件，以追加模式  
-    std::ofstream file(points_f, std::ios::app);  
-  
-    // 检查文件是否成功打开  
-    if (!file.is_open()) {  
-        std::cerr << "无法打开文件 " << points_f << std::endl;  
-        return 1;  
-    }  
-    // 写入文本  
-    std::string line = img_index+" "+filename+"\n";   
-    file << line;  
-    // 关闭文件  
-    file.close();  
-    std::cout << "文本已成功追加到文件 " << points_f << std::endl; 
-    img_index++;
-    }  
-
 void OdometryServer::RegisterFrame(const sensor_msgs::msg::PointCloud2::ConstSharedPtr &msg) {
     const auto cloud_frame_id = msg->header.frame_id;
     const auto points = PointCloud2ToEigen(msg);
     const auto timestamps = GetTimestamps(msg);
-    cout<<"point size "<<points.size()<<endl;
-    oss.str("");  // 清空ostringstream  
-    oss.clear();  // 重置状态  
-    oss << "point_" << std::setw(4) << std::setfill('0') << points_index << ".png";  
-    string filename = oss.str();  
-    std::string path = imgs_save_path + filename;  
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);  
-    pcl::fromROSMsg(*msg, *cloud);  
-    // 保存点云数据（示例为写入PCD文件）  
-    pcl::io::savePCDFileASCII(path, *cloud); 
-
-    std::string points_f = root_path+"points.txt";  
-  
-    // 创建并打开文件，以追加模式  
-    std::ofstream file(points_f, std::ios::app);  
-  
-    // 检查文件是否成功打开  
-    if (!file.is_open()) {  
-        std::cerr << "无法打开文件 " << points_f << std::endl;  
-        return 1;  
-    }  
-    // 写入文本  
-    std::string line = points_index+" "+filename+"\n";   
-    file << line;  
-    // 关闭文件  
-    file.close();  
-    std::cout << "文本已成功追加到文件 " << points_f << std::endl; 
-    points_index++;
     // Register frame, main entry point to KISS-ICP pipeline
     const auto &[frame, keypoints] = kiss_icp_->RegisterFrame(points, timestamps);
 
