@@ -70,6 +70,7 @@ namespace kiss_icp_ros {
 using utils::EigenToPointCloud2;
 using utils::GetTimestamps;
 using utils::PointCloud2ToEigen;
+using utils::saveVectorToPLY;
 
 OdometryServer::OdometryServer(const rclcpp::NodeOptions &options)
     : rclcpp::Node("kiss_icp_node", options) {
@@ -133,7 +134,22 @@ void OdometryServer::RegisterFrame(const sensor_msgs::msg::PointCloud2::ConstSha
     const auto cloud_frame_id = msg->header.frame_id;
     const auto points = PointCloud2ToEigen(msg);
     const auto timestamps = GetTimestamps(msg);
-
+    std::ostringstream oss;  
+    oss << "image_" << std::setw(4) << std::setfill('0') << points_index << ".ply";  
+    std::string filename = oss.str();
+    std::string  current_path="output";
+    // 首先确保基础路径存在  
+    if (!fs::exists(current_path) && !fs::create_directories(current_path)) {  
+        std::cerr << "Failed to create base directory: " << current_path << std::endl;  
+        return;  
+    }  
+    current_path="output/points";
+     if (!fs::exists(current_path) && !fs::create_directories(current_path)) {  
+        std::cerr << "Failed to create base directory: " << current_path << std::endl;  
+        return;  
+    }  
+    saveVectorToPLY(points,"output/points/"+filename);
+    points_index++;
     // Register frame, main entry point to KISS-ICP pipeline
     const auto &[frame, keypoints] = kiss_icp_->RegisterFrame(points, timestamps);
 

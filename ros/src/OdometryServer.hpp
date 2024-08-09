@@ -35,7 +35,8 @@
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/header.hpp>
 #include <string>
-
+#include <filesystem>  
+namespace fs = std::filesystem; 
 namespace kiss_icp_ros {
 
 class OdometryServer : public rclcpp::Node {
@@ -64,6 +65,8 @@ private:
     bool invert_odom_tf_;
     bool publish_odom_tf_;
     bool publish_debug_clouds_;
+    int points_index=0;
+    
 
     /// Data subscribers.
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pointcloud_sub_;

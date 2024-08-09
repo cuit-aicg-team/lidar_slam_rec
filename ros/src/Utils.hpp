@@ -31,6 +31,7 @@
 #include <sophus/se3.hpp>
 #include <string>
 #include <vector>
+#include <fstream>  
 
 // ROS 2
 #include <geometry_msgs/msg/pose.hpp>
@@ -94,7 +95,7 @@ inline std::string FixFrameId(const std::string &frame_id) {
 inline std::optional<PointField> GetTimestampField(const PointCloud2::ConstSharedPtr msg) {
     PointField timestamp_field;
     for (const auto &field : msg->fields) {
-        if ((field.name == "t" || field.name == "timestamp" || field.name == "time")) {
+        if ((field.name == "t" || field.name == "timestamp" || field.name == "point_time")) {
             timestamp_field = field;
         }
     }
@@ -211,6 +212,30 @@ inline std::vector<Eigen::Vector3d> PointCloud2ToEigen(const PointCloud2::ConstS
     }
     return points;
 }
+
+inline void saveVectorToPLY(const std::vector<Eigen::Vector3d>& vectors, const std::string& filename) {  
+    std::ofstream file(filename);  
+    if (!file.is_open()) {  
+        std::cerr << "Failed to open file: " << filename << std::endl;  
+        return;  
+    }  
+  
+    // 写入PLY文件的头部信息  
+    file << "ply\n";  
+    file << "format ascii 1.0\n"; // ASCII格式  
+    file << "element vertex " << vectors.size() << "\n"; // 顶点元素  
+    file << "property float x\n";  
+    file << "property float y\n";  
+    file << "property float z\n";  
+    file << "end_header\n";  
+  
+    // 写入顶点数据  
+    for (const auto& vec : vectors) {  
+        file << vec.x() << " " << vec.y() << " " << vec.z() << "\n";  
+    }  
+  
+    file.close();  
+}  
 
 inline std::unique_ptr<PointCloud2> EigenToPointCloud2(const std::vector<Eigen::Vector3d> &points,
                                                        const Header &header) {
