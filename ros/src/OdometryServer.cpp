@@ -135,7 +135,7 @@ void OdometryServer::RegisterFrame(const sensor_msgs::msg::PointCloud2::ConstSha
     const auto points = PointCloud2ToEigen(msg);
     const auto timestamps = GetTimestamps(msg);
     std::ostringstream oss;  
-    oss << "image_" << std::setw(4) << std::setfill('0') << points_index << ".ply";  
+    oss << "point_" << std::setw(4) << std::setfill('0') << points_index << ".ply";  
     std::string filename = oss.str();
     std::string  current_path="output";
     // 首先确保基础路径存在  
@@ -213,6 +213,20 @@ void OdometryServer::PublishClouds(const std::vector<Eigen::Vector3d> frame,
                                    const std_msgs::msg::Header &header) {
     const auto kiss_map = kiss_icp_->LocalMap();
     const auto kiss_pose = kiss_icp_->pose().inverse();
+
+    std::string filename = "map.ply";
+    std::string  current_path="output";
+    // 首先确保基础路径存在  
+    if (!fs::exists(current_path) && !fs::create_directories(current_path)) {  
+        std::cerr << "Failed to create base directory: " << current_path << std::endl;  
+        return;  
+    }  
+    current_path="output/map";
+     if (!fs::exists(current_path) && !fs::create_directories(current_path)) {  
+        std::cerr << "Failed to create base directory: " << current_path << std::endl;  
+        return;  
+    }  
+    saveVectorToPLY(kiss_map,"output/map/"+filename);
 
     frame_publisher_->publish(std::move(EigenToPointCloud2(frame, header)));
     kpoints_publisher_->publish(std::move(EigenToPointCloud2(keypoints, header)));
