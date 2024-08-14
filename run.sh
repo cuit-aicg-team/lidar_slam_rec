@@ -1,4 +1,5 @@
 #! /bin/bash  
+#移动到src同级目录，chmod a+x run.sh 
 ray_count=$1  
 catkin_make  
 source devel/setup.sh  

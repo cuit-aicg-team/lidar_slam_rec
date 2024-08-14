@@ -847,12 +847,17 @@ void process()
 			{
 				pointAssociateToMap(&laserCloudFullRes->points[i], &laserCloudFullRes->points[i]);
 			}
-
 			sensor_msgs::PointCloud2 laserCloudFullRes3;
 			pcl::toROSMsg(*laserCloudFullRes, laserCloudFullRes3);
 			laserCloudFullRes3.header.stamp = ros::Time().fromSec(timeLaserOdometry);
 			laserCloudFullRes3.header.frame_id = "/camera_init";
+
 			pubLaserCloudFullRes.publish(laserCloudFullRes3);
+			// pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);  
+            // // 从sensor_msgs/PointCloud2转换为pcl::PointCloud<pcl::PointXYZ>  
+            // pcl::fromROSMsg(*laserCloudFullRes3, *cloud);  
+            // 现在我们可以使用size()方法获取点的数量  
+            // std::cout << "pubLaserCloudFullRes Received a point cloud with " << laserCloudFullRes->size() << " points." << std::endl;  
 
 			//printf("mapping pub time %f ms \n", t_pub.toc());
 

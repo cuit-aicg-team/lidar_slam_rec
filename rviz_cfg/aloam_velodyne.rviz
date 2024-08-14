@@ -285,8 +285,8 @@ Visualization Manager:
           Queue Size: 10
           Selectable: true
           Size (Pixels): 1.5
-          Size (m): 0.009999999776482582
-          Style: Points
+          Size (m): 0.1
+          Style: Squares
           Topic: /velodyne_cloud_registered
           Unreliable: false
           Use Fixed Frame: true
@@ -325,7 +325,7 @@ Visualization Manager:
             Value: Axes
           Topic: /aft_mapped_to_init
           Unreliable: false
-          Value: false
+          Value: true
         - Class: rviz/TF
           Enabled: false
           Frame Timeout: 15
