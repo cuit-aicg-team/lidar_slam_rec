@@ -1,0 +1,25 @@
+gstam:
+	sudo add-apt-repository ppa:borglab/gtsam-release-4.0
+	sudo apt install libgtsam-dev libgtsam-unstable-dev
+ceres-solver:
+	# CMake
+	sudo apt-get install cmake
+	# google-glog + gflags
+	sudo apt-get install libgoogle-glog-dev libgflags-dev
+	# Use ATLAS for BLAS & LAPACK
+	sudo apt-get install libatlas-base-dev
+	# Eigen3
+	sudo apt-get install libeigen3-dev
+	# SuiteSparse (optional)
+	sudo apt-get install libsuitesparse-dev
+        https://ceres-solver.googlesource.com/ceres-solver/+/refs/tags/1.14.0
+        tar zxf ceres-solver-1.4.tar.gz
+	mkdir ceres-bin
+	cd ceres-bin
+	cmake ..
+	make -j3
+	make test
+	# Optionally install Ceres, it can also be exported using CMake which
+	# allows Ceres to be used without requiring installation, see the documentation
+	# for the EXPORT_BUILD_DIR option for more information.
+	make install
