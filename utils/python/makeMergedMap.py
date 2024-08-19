@@ -14,8 +14,8 @@ import open3d as o3d
 
 from pypcdMyUtils import * 
 
-jet_table = np.load('jet_table.npy')
-bone_table = np.load('bone_table.npy')
+jet_table = np.load('/home/asher/disk_space/workspace/code/gloam_ros/src/lidar_slam_rec/utils/python/jet_table.npy')
+bone_table = np.load('/home/asher/disk_space/workspace/code/gloam_ros/src/lidar_slam_rec/utils/python/bone_table.npy')
 
 color_table = bone_table
 color_table_len = color_table.shape[0]
@@ -25,8 +25,7 @@ color_table_len = color_table.shape[0]
 # User only consider this block
 ##########################
 
-data_dir = "/home/guowenwu/Documents/catkin2021/catkin_scaloam_scd_saver/data/out/kitti360-09-excloud-first-30percent/" # should end with / 
-scan_idx_range_to_stack = [0, 20] # if you want a whole map, use [0, len(scan_files)]
+data_dir = "/home/asher/disk_space/workspace/code/gloam_ros/output/" # should end with / 
 node_skip = 1
 
 num_points_in_a_scan = 150000 # for reservation (save faster) // e.g., use 150000 for 128 ray lidars, 100000 for 64 ray lidars, 30000 for 16 ray lidars, if error occured, use the larger value.
@@ -57,6 +56,7 @@ while True:
 f.close()
 
 
+scan_idx_range_to_stack = [0, len(scan_files)] # if you want a whole map, use [0, len(scan_files)]
 #
 assert (scan_idx_range_to_stack[1] > scan_idx_range_to_stack[0])
 print("Merging scans from", scan_idx_range_to_stack[0], "to", scan_idx_range_to_stack[1])
@@ -114,7 +114,7 @@ for node_idx in range(len(scan_files)):
         scan_xyz = scan_xyz[eff_idxes[0], :]
         scan_intensity = scan_intensity[eff_idxes[0], :]
 
-        scan_pcd_global = scan_pcd_global.select_by_index(eff_idxes[0])
+        scan_pcd_global = scan_pcd_global.select_down_sample(eff_idxes[0])
     print("pose",scan_pose)
     if(is_o3d_vis):
         pcd_combined_for_vis += scan_pcd_global # open3d pointcloud class append is fast 
@@ -135,9 +135,9 @@ for node_idx in range(len(scan_files)):
     print(curr_count)
  
 #
-if(is_o3d_vis):
-    print("draw the merged map.")
-    o3d.visualization.draw_geometries([pcd_combined_for_vis])
+# if(is_o3d_vis):
+#     print("draw the merged map.")
+#     o3d.visualization.draw_geometries([pcd_combined_for_vis])
 
 
 # save ply having intensity
@@ -149,6 +149,8 @@ xyzi = make_xyzi_point_cloud(np_xyzi_all)
 
 map_name = data_dir + "map_" + str(scan_idx_range_to_stack[0]) + "_to_" + str(scan_idx_range_to_stack[1]) + "_with_intensity.pcd"
 xyzi.save_pcd(map_name, compression='binary_compressed')
+map_name2 = data_dir + "map_" + str(scan_idx_range_to_stack[0]) + "_to_" + str(scan_idx_range_to_stack[1]) + ".pcd"
+o3d.io.write_point_cloud(map_name2, pcd_combined_for_vis)
 print("intensity map is save (path:", map_name, ")")
 
 # save rgb colored points 

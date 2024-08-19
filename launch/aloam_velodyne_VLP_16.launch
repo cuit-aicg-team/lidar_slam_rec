@@ -24,7 +24,7 @@
 
     <!--  -->
     <param name="lidar_type" type="string" value="VLP16"/> 
-    <remap from="/velodyne_points" to="/velodyne_points"/>
+    <remap from="/points_raw" to="/velodyne_points"/>
     
     <!-- nodes -->
     <node pkg="aloam_velodyne" type="ascanRegistration" name="ascanRegistration" output="screen" />

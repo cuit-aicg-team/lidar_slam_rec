@@ -20,11 +20,11 @@
     <param name="sc_max_radius" type="double" value="80.0"/> <!-- for outdoor -->
 
     <!-- utils -->
-    <param name="save_directory" type="string" value="/home/guowenwu/Documents/catkin2021/catkin_scaloam_scd_saver/data/out/kitti360-09-excloud-first-30percent/"/>  <!-- CHANGE THIS and end with / -->
+    <param name="save_directory" type="string" value="/home/asher/disk_space/workspace/code/gloam_ros/output/"/>  <!-- CHANGE THIS and end with / -->
 
     <!--  -->
     <param name="lidar_type" type="string" value="HDL64"/> 
-    <remap from="/velodyne_points" to="/velodyne_points"/>
+    <remap from="/points_raw" to="/velodyne_points"/>
 
     <node pkg="aloam_velodyne" type="ascanRegistration" name="ascanRegistration" output="screen" />
     <node pkg="aloam_velodyne" type="alaserOdometry" name="alaserOdometry" output="screen" />

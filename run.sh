@@ -1,5 +1,4 @@
 #! /bin/bash  
-#移动到src同级目录，chmod a+x run.sh 
 ray_count=$1  
 catkin_make  
 source devel/setup.sh  
@@ -12,4 +11,6 @@ elif [ "$ray_count" == '64' ]; then
 else  
     roslaunch aloam_velodyne aloam_mulran.launch  
 fi  
+#conda activate g_loam
+python ./src/lidar_slam_rec/utils/python/makeMergedMap.py
 echo "done"

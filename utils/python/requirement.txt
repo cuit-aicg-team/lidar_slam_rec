@@ -53,4 +53,4 @@ wcwidth==0.2.5
 webencodings==0.5.1
 widgetsnbextension==3.6.0
 zipp==1.2.0
-open3d==0.9.0.0
+open3d==0.10.0

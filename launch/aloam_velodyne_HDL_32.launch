@@ -21,7 +21,7 @@
 
     <!--  -->
     <param name="lidar_type" type="string" value="HDL32"/>
-    <remap from="/velodyne_points" to="/velodyne_points"/>
+    <remap from="/points_raw" to="/velodyne_points"/>
 
     <node pkg="aloam_velodyne" type="ascanRegistration" name="ascanRegistration" output="screen" />
     <node pkg="aloam_velodyne" type="alaserOdometry" name="alaserOdometry" output="screen" />
